@@ -1,0 +1,29 @@
+# Configuration du réseau pour le Système Multi-Agents
+BROADCAST_PORT=5050
+BROADCAST_IP=255.255.255.255
+
+# Configuration des temps (en secondes)
+HEARTBEAT_INTERVAL=30
+PEER_TIMEOUT=45
+
+# Le port TCP que cette machine utilisera plus tard pour recevoir les fichiers
+RECEIVER_TCP_PORT=8080
+
+# Configuration de la Caméra et de l'Agent Expéditeur
+CAMERA_INDEX=0
+# Délai (en secondes) où la main doit rester fermée pour "attraper" le fichier
+TIME_TO_GRAB_SEC=1.0
+# Délai (en secondes) avant d'annuler si on lâche la main à l'écran
+TIME_TO_CANCEL_SEC=1.0
+# Chemin vers le dossier temporaire
+TMP_FOLDER_PATH=./tmp_transfer
+# Marge (en pourcentage 0.0 à 1.0) pour considérer que la main "sort" de l'écran
+OUT_OF_BOUNDS_MARGIN=0.05
+
+# Type de message pour l'alerte
+SIG_READY_TO_RECEIVE=READY_TO_RECEIVE
+SIG_CANCEL_RECEIVE=CANCEL_RECEIVE
+
+RECEIVE_FOLDER_PATH=./received_files
+# Temps max (en secondes) pour présenter la main fermée avant que la caméra s'éteigne
+TIMEOUT_WAITING_HAND=5.0
