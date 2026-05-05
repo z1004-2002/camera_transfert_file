@@ -126,7 +126,7 @@ class PeerAgent:
             print("✅ [SENDER] Fichier transféré avec succès !")
             
             # Optionnel : Supprimer le fichier du /tmp après envoi
-            os.remove(file_path)
+            # os.remove(file_path)
         except Exception as e:
             print(f"❌ [SENDER] Échec du transfert TCP : {e}")
 
