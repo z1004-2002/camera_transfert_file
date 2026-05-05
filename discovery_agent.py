@@ -73,9 +73,9 @@ class DiscoveryAgent:
                 data, addr = self.udp_socket.recvfrom(1024)
                 ip_sender = addr[0]
                 
-                # Optionnel : Ignorer notre propre heartbeat
-                # if ip_sender == socket.gethostbyname(socket.gethostname()):
-                #    continue
+                # Ignorer notre propre heartbeat
+                if ip_sender == socket.gethostbyname(socket.gethostname()):
+                   continue
 
                 message = json.loads(data.decode('utf-8'))
                 
