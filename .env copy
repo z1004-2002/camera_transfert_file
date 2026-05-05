@@ -9,7 +9,7 @@ PEER_TIMEOUT=45
 # Le port TCP que cette machine utilisera plus tard pour recevoir les fichiers
 RECEIVER_TCP_PORT=8080
 TCP_PORT=8080
-
+SIG_PULL_FILE=PULL_FILE
 # Configuration de la Caméra et de l'Agent Expéditeur
 CAMERA_INDEX=0
 # Délai (en secondes) où la main doit rester fermée pour "attraper" le fichier
