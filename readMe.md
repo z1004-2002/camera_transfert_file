@@ -34,3 +34,13 @@ faire le transfert de fichier à partir de la détection du movement de la main 
    5. Reception du fichier
    6. Envoi du signal d'arrêt d'envoie.
       1. Si le sender envoie plutôt le message de fermeture, on arrête la reception
+
+
+## Install this
+
+```sudo
+sudo apt-get update
+sudo apt-get install python3-tk python3-dev scrot xsel xclip
+sudo apt-get install xclip
+
+```
