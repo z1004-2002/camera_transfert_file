@@ -30,7 +30,7 @@ class DiscoveryAgent:
 
     def start(self):
         """Lance les threads de l'agent de découverte."""
-        print("🚀 Démarrage de l'Agent de Découverte...")
+        print("Démarrage de l'Agent de Découverte...")
         
         # Thread 1 : Écoute les signaux des autres machines
         listener_thread = threading.Thread(target=self._listen_for_heartbeats, daemon=True)
@@ -57,7 +57,7 @@ class DiscoveryAgent:
             try:
                 # Envoi du message à tout le réseau (Broadcast)
                 self.udp_socket.sendto(message_bytes, (self.broadcast_ip, self.broadcast_port))
-                # print(f"💓 Heartbeat envoyé sur le port {self.broadcast_port}")
+                # print(f"Heartbeat envoyé sur le port {self.broadcast_port}")
             except Exception as e:
                 print(f"Erreur d'envoi du heartbeat : {e}")
                 
