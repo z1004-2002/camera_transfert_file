@@ -4,6 +4,7 @@ import time
 import json
 import os
 from dotenv import load_dotenv
+import queue
 
 # Charge les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -27,6 +28,7 @@ class DiscoveryAgent:
         
         # On lie le socket au port pour écouter tout ce qui arrive
         self.udp_socket.bind(('', self.broadcast_port))
+        self.alert_queue = queue.Queue()
 
     def start(self):
         """Lance les threads de l'agent de découverte."""
@@ -84,6 +86,14 @@ class DiscoveryAgent:
                     # On ajoute ou met à jour l'IP avec l'heure exacte de réception
                     self.active_peers[ip_sender] = time.time()
                     print(f"✅ Peer détecté/mis à jour : {ip_sender} (Port cible: {message.get('receiver_port')})")
+                    
+                elif message.get("type") == "alert":
+                    print(f"🔔 Alerte reçue de {ip_sender} : {message.get('signal')}")
+                    self.alert_queue.put({
+                        "sender_ip": ip_sender,
+                        "signal": message.get("signal"),
+                        "file": message.get("file")
+                    })
                     
             except Exception as e:
                 print(f"Erreur de réception : {e}")
