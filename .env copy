@@ -8,6 +8,7 @@ PEER_TIMEOUT=45
 
 # Le port TCP que cette machine utilisera plus tard pour recevoir les fichiers
 RECEIVER_TCP_PORT=8080
+TCP_PORT=8080
 
 # Configuration de la Caméra et de l'Agent Expéditeur
 CAMERA_INDEX=0
