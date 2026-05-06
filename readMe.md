@@ -1,43 +1,43 @@
 # 🖐️ Hand Gesture File Transfer
 
-Un système innovant de transfert de fichiers de Pair-à-Pair (P2P) interactif, entièrement contrôlé par la reconnaissance gestuelle. Ce projet s'appuie sur le paradigme des **Systèmes Multi-Agents (SMA)** pour gérer la découverte réseau, la reconnaissance visuelle et le transfert binaire de manière décentralisée et asynchrone.
+An innovative interactive Peer-to-Peer (P2P) file transfer system, entirely controlled by gesture recognition. This project relies on the **Multi-Agent Systems (MAS)** paradigm to handle network discovery, visual recognition, and binary transfer in a decentralized and asynchronous manner.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-* **Saisie "Drag & Drop" Physique :** Fermez la main devant la caméra pour "attraper" un fichier, sortez la main de l'écran, et ouvrez-la sur un autre ordinateur pour le "déposer".
-* **Découverte Réseau Automatique (UDP) :** Les nœuds se découvrent automatiquement sur le réseau local via un système de "Heartbeat" (battements de cœur) passif. Aucun serveur central n'est requis.
-* **Transfert Sécurisé (TCP) :** Une fois l'intention de transfert validée par les gestes, le fichier est transféré sans perte de données via un socket TCP.
-* **Machine à États Robuste :** Gestion fluide des annulations (si l'utilisateur relâche le fichier trop tôt ou annule le mouvement).
-* **Architecture P2P Unifiée :** Chaque machine exécute le même code et bascule dynamiquement entre les rôles d'Expéditeur (`SENDER`) et de Récepteur (`RECEIVER`).
-
----
-
-## 🛠️ Prérequis
-
-* **Python 3.8** ou supérieur.
-* Une **Webcam** fonctionnelle.
-* Deux ordinateurs connectés au **même réseau local** (Wi-Fi ou Ethernet).
+* **Physical "Drag & Drop" Input:** Close your hand in front of the camera to "grab" a file, move your hand out of the frame, and open it on another computer to "drop" it.
+* **Automatic Network Discovery (UDP):** Nodes automatically discover each other on the local network via a passive "Heartbeat" system. No central server is required.
+* **Secure Transfer (TCP):** Once the transfer intention is validated by gestures, the file is transferred without data loss via a TCP socket.
+* **Robust State Machine:** Smooth handling of cancellations (if the user releases the file too early or cancels the movement).
+* **Unified P2P Architecture:** Each machine runs the same code and dynamically switches between Sender (`SENDER`) and Receiver (`RECEIVER`) roles.
 
 ---
 
-## 🚀 Installation et Démarrage
+## 🛠️ Prerequisites
 
-### 1. Cloner le projet
+* **Python 3.8** or higher.
+* A functional **Webcam**.
+* Two computers connected to the **same local network** (Wi-Fi or Ethernet).
+
+---
+
+## 🚀 Installation and Setup
+
+### 1. Clone the project
 ```bash
-git clone <URL_DE_TON_DEPOT>
-cd <NOM_DU_DOSSIER>
+git clone <YOUR_REPOSITORY_URL>
+cd <FOLDER_NAME>
 ```
 
-### 2. Créer un environnement virtuel (Recommandé)
+### 2. Create a virtual environment (Recommended)
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # Sur Windows : venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 3. Installer les dépendances
+### 3. Install dependencies
 
-Créez un fichier `requirements.txt` si cela n'existe pas déjà contenant ces lignes, puis installez-les :
+Create a `requirements.txt` file if it doesn't already exist containing these lines, then install them:
 
 ```Plaintext
 python-dotenv==1.0.0
@@ -49,73 +49,79 @@ mediapipe==0.10.7
 pip install -r requirements.txt
 ```
 
-### 4. Configuration (Le fichier .env)
+### 4. Configuration (The .env file)
 
-Créez un fichier nommé `.env` à la racine du projet et collez-y la configuration suivante :
+Create a file named `.env` at the root of the project and paste the following configuration:
 
 ```Code snippet
 # .env
 
-# Configuration du réseau pour le Système Multi-Agents
+# Network configuration for the Multi-Agent System
 BROADCAST_PORT=5050
 BROADCAST_IP=255.255.255.255
 
-# Configuration des temps (en secondes)
+# Time configuration (in seconds)
 HEARTBEAT_INTERVAL=30
 PEER_TIMEOUT=45
 
-# Ports TCP/UDP
+# TCP/UDP Ports
 RECEIVER_TCP_PORT=8080
 TCP_PORT=8080
 
-# Signaux Réseau
+# Network Signals
 SIG_PULL_FILE=PULL_FILE
 SIG_READY_TO_RECEIVE=READY_TO_RECEIVE
 SIG_CANCEL_RECEIVE=CANCEL_RECEIVE
 
-# Configuration de la Caméra et de l'Agent Expéditeur
+# Camera and Sender Agent configuration
 CAMERA_INDEX=0
 TIME_TO_GRAB_SEC=0.5
 TIME_TO_CANCEL_SEC=1.0
 OUT_OF_BOUNDS_MARGIN=0.05
 TIMEOUT_WAITING_HAND=5.0
 
-# Chemins des dossiers (Créés automatiquement au lancement)
+# Folder paths (Automatically created on launch)
 TMP_FOLDER_PATH=./tmp_transfer
 RECEIVE_FOLDER_PATH=./received_files
 ```
 
-## 🎮 Comment l'utiliser ? (La Chorégraphie)
+---
 
-1. Placez un fichier que vous souhaitez envoyer dans le dossier `./tmp_transfer` de l'Ordinateur A.
-2. Lancez le programme sur les deux ordinateurs :
+## 🎮 How to use it? (The Choreography)
+
+1. Place a file you want to send into the `./tmp_transfer `folder of Computer A.
+2. Run the program on both computers:
+
 ```bash
 python peer_agent.py
 ```
 
-3. Sur l'Ordinateur A (Expéditeur) :
-   * Présentez votre main ouverte devant la caméra.
-   * Fermez la main (comme pour attraper un objet). Maintenez-la fermée pendant 0.5s. Le système va saisir le fichier du dossier `./tmp_transfer`.
-   * Sortez votre main fermée du champ de vision de la caméra. Le système passe en `"MODE ENVOI ACTIF"` et alerte le réseau.
-4. Sur l'Ordinateur B (Récepteur) :
-   * L'écran affiche qu'un signal est reçu et vous demande de fermer la main.
-   * Présentez votre main fermée dans la caméra.
-   * Ouvrez la main (comme pour lâcher un objet).
-5. Transfert : Le transfert TCP se déclenche. Le fichier apparaîtra dans le dossier `./received_files` de l'Ordinateur B !
+1. On Computer A (Sender):
+   * Hold your open hand in front of the camera.
+   * Close your hand (as if grabbing an object). Keep it closed for 0.5s. The system will grab the file from the `./tmp_transfer` folder.
+   * Move your closed hand out of the camera's field of view. The system switches to "`ACTIVE SEND MODE`" and alerts the network.
+2. On Computer B (Receiver):
+   * The screen displays that a signal has been received and asks you to close your hand.
+   * Hold your closed hand in front of the camera.
+   * Open your hand (as if dropping an object).
+3. Transfer: The TCP transfer is triggered. The file will appear in the `./received_files` folder of Computer B!
 
-💡 Astuce d'annulation : Si vous changez d'avis pendant l'étape 3, ramenez simplement votre main dans le cadre de la caméra de l'Ordinateur A et ouvrez-la. Le transfert sera instantanément annulé.
+💡 Cancellation tip: If you change your mind during step 3, simply bring your hand back into the camera frame of Computer A and open it. The transfer will be instantly canceled.
 
-## 🧠 Architecture du Système (SMA)
-Le projet est divisé en deux composants principaux qui collaborent de manière asynchrone :
+---
 
-1. discovery_agent.py (L'Agent de Réseau)
-   * Fonctionne en arrière-plan avec des threads (`threading`).
-   * Envoie des broadcasts UDP toutes les 30 secondes ("Je suis en vie").
-   * Maintient un annuaire dynamique des pairs actifs sur le réseau.
-   * Intercepte les signaux d'alerte (`READY`, `CANCEL`, `PULL`) et les transmet au nœud principal via une file d'attente (`queue.Queue`).
+## 🧠 System Architecture (MAS)
 
-2. peer_agent.py (Le Nœud Pair / Logique Vidéo)
-   * Gère le flux vidéo OpenCV et le traitement MediaPipe Hands.
-   * Implémente une machine à états finis (`IDLE`, `GRABBING`, `HOLDING`, `SENDING`, `WAKING_UP`, `WAITING_DROP`).
-   * Change dynamiquement de rôle (`SENDER` ↔ `RECEIVER`) en fonction des événements physiques (gestes) et réseau (signaux de l'agent de découverte).
-   * Gère les connexions et transferts de fichiers binaires via TCP (`socket`).
+The project is divided into two main components that collaborate asynchronously:
+
+1. `discovery_agent.py` (The Network Agent)
+   * Runs in the background using threads (`threading`).
+   * Sends UDP broadcasts every 30 seconds ("I am alive").
+   * Maintains a dynamic directory of active peers on the network.
+   * Intercepts alert signals (`READY`, `CANCEL`, `PULL`) and passes them to the main node via a queue (`queue.Queue`).
+
+2. `peer_agent.py` (The Peer Node / Video Logic)
+   * Manages the OpenCV video stream and MediaPipe Hands processing.
+   * Implements a finite state machine (`IDLE`, `GRABBING`, `HOLDING`, `SENDING`, `WAKING_UP`, `WAITING_DROP`).
+   * Dynamically switches roles (`SENDER` ↔ `RECEIVER`) based on physical events (gestures) and network events (signals from the discovery agent).
+   * Handles connections and binary file transfers via TCP (`socket`).
