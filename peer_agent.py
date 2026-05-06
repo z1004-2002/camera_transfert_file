@@ -14,22 +14,22 @@ load_dotenv()
 class PeerAgent:
     def __init__(self):
         # Configuration globale
-        self.camera_index = int(os.getenv("CAMERA_INDEX", 0))
-        self.tmp_folder = os.getenv("TMP_FOLDER_PATH", "./tmp_transfert")
-        self.receive_folder = os.getenv("RECEIVE_FOLDER_PATH", "./received_files")
+        self.camera_index = int(os.getenv("CAMERA_INDEX"))
+        self.tmp_folder = os.getenv("TMP_FOLDER_PATH")
+        self.receive_folder = os.getenv("RECEIVE_FOLDER_PATH")
         
         # Délais et marges
-        self.time_to_grab = float(os.getenv("TIME_TO_GRAB_SEC", 1.0))
-        self.time_to_cancel = float(os.getenv("TIME_TO_CANCEL_SEC", 2.0))
-        self.timeout_waiting = float(os.getenv("TIMEOUT_WAITING_HAND", 5.0))
-        self.margin = float(os.getenv("OUT_OF_BOUNDS_MARGIN", 0.05))
+        self.time_to_grab = float(os.getenv("TIME_TO_GRAB_SEC"))
+        self.time_to_cancel = float(os.getenv("TIME_TO_CANCEL_SEC"))
+        self.timeout_waiting = float(os.getenv("TIMEOUT_WAITING_HAND"))
+        self.margin = float(os.getenv("OUT_OF_BOUNDS_MARGIN"))
         
         # Signaux & TCP
-        self.sig_ready = os.getenv("SIG_READY_TO_RECEIVE", "READY_TO_RECEIVE")
-        self.sig_cancel = os.getenv("SIG_CANCEL_RECEIVE", "CANCEL_RECEIVE")
-        self.sig_pull = os.getenv("SIG_PULL_FILE", "PULL_FILE") # Nouveau signal !
-        self.broadcast_port = int(os.getenv("BROADCAST_PORT", 5050))
-        self.tcp_port = int(os.getenv("TCP_PORT", 8080))
+        self.sig_ready = os.getenv("SIG_READY_TO_RECEIVE")
+        self.sig_cancel = os.getenv("SIG_CANCEL_RECEIVE")
+        self.sig_pull = os.getenv("SIG_PULL_FILE") # Nouveau signal !
+        self.broadcast_port = int(os.getenv("BROADCAST_PORT"))
+        self.tcp_port = int(os.getenv("TCP_PORT"))
 
         # Récupération de l'IP locale
         self.local_ip = self._get_local_ip()
@@ -247,7 +247,8 @@ class PeerAgent:
                                 self.selected_file_path = None
                         else:
                             self.release_start_time = 0
-                            if out_of_bounds and self.selected_file_path:
+                            # if out_of_bounds and self.selected_file_path:
+                            if self.selected_file_path:
                                 self.sender_state = "SENDING"
                                 file_name = os.path.basename(self.selected_file_path)
                                 print(f"📡 [SENDER] Envoi signal READY_TO_RECEIVE pour {file_name}")
@@ -256,10 +257,17 @@ class PeerAgent:
                     elif self.sender_state == "SENDING":
                         cv2.putText(img, "MODE ENVOI ACTIF", (10, 50), 1, 2, (255, 0, 255), 2)
                         if not closed:
-                            print("❌ [SENDER] Relâchement local. Annulation.")
-                            self._send_network_signal(self.sig_cancel)
-                            self.sender_state = "IDLE"
-                            self.selected_file_path = None
+                            if self.release_start_time == 0: self.release_start_time = time.time()
+                            elapsed = time.time() - self.release_start_time
+                            cv2.putText(img, f"Annulation {self.time_to_cancel-elapsed:.1f}s", (10, 100), 1, 2, (0, 0, 255), 2)
+                            if elapsed >= self.time_to_cancel:
+                                self.sender_state = "IDLE"
+                                self.selected_file_path = None
+                                print("❌ [SENDER] Relâchement local. Annulation.")
+                                self._send_network_signal(self.sig_cancel)
+                                self.selected_file_path = None
+                        else:
+                            self.release_start_time = time.time()
 
                 else:
                     if self.sender_state == "HOLDING" and self.selected_file_path:
