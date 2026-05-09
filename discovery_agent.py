@@ -16,7 +16,7 @@ class DiscoveryAgent:
         self.broadcast_ip = os.getenv("BROADCAST_IP")
         self.heartbeat_interval = int(os.getenv("HEARTBEAT_INTERVAL"))
         self.peer_timeout = int(os.getenv("PEER_TIMEOUT"))
-        self.receiver_port = int(os.getenv("RECEIVER_TCP_PORT"))
+        self.receiver_port = int(os.getenv("TCP_PORT"))
         
         # Dictionnaire pour stocker les machines actives : { 'IP': timestamp_dernier_contact }
         self.active_peers = {}

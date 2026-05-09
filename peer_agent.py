@@ -27,7 +27,7 @@ class PeerAgent:
         # Signaux & TCP
         self.sig_ready = os.getenv("SIG_READY_TO_RECEIVE")
         self.sig_cancel = os.getenv("SIG_CANCEL_RECEIVE")
-        self.sig_pull = os.getenv("SIG_PULL_FILE") # Nouveau signal !
+        self.sig_pull = os.getenv("SIG_PULL_FILE")
         self.broadcast_port = int(os.getenv("BROADCAST_PORT"))
         self.tcp_port = int(os.getenv("TCP_PORT"))
 
@@ -73,8 +73,7 @@ class PeerAgent:
     def is_hand_closed(self, hand_landmarks):
         tips_ids = [8, 12, 16, 20] 
         pips_ids = [6, 10, 14, 18]
-        fingers_folded = sum(1 for t, p in zip(tips_ids, pips_ids) 
-                            if hand_landmarks.landmark[t].y > hand_landmarks.landmark[p].y)
+        fingers_folded = sum(1 for t, p in zip(tips_ids, pips_ids) if hand_landmarks.landmark[t].y > hand_landmarks.landmark[p].y)
         return fingers_folded >= 3
 
     def is_hand_out_of_bounds(self, hand_landmarks):
