@@ -5,6 +5,7 @@ import os
 import queue
 import socket
 import json
+import math
 import threading
 from dotenv import load_dotenv
 from discovery_agent import DiscoveryAgent
@@ -69,12 +70,40 @@ class PeerAgent:
             return ip
         except Exception:
             return socket.gethostbyname(socket.gethostname())
-
+    def _get_distance(self, p1, p2):
+        """Calcule la distance euclidienne 3D entre deux points MediaPipe."""
+        return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+    
     def is_hand_closed(self, hand_landmarks):
-        tips_ids = [8, 12, 16, 20] 
-        pips_ids = [6, 10, 14, 18]
-        fingers_folded = sum(1 for t, p in zip(tips_ids, pips_ids) if hand_landmarks.landmark[t].y > hand_landmarks.landmark[p].y)
+        """
+        Nouvelle méthode robuste : Indépendante de la rotation.
+        Compare la distance (Bout du doigt -> Poignet) avec (Base du doigt -> Poignet).
+        """
+        wrist = hand_landmarks.landmark[0] # Point 0 : Le poignet
+        tips_ids = [8, 12, 16, 20]         # Bouts des doigts (Index, Majeur, Annulaire, Auriculaire)
+        mcps_ids = [5, 9, 13, 17]          # Articulations à la base des doigts (Knuckles)
+        
+        fingers_folded = 0
+        
+        for tip_id, mcp_id in zip(tips_ids, mcps_ids):
+            tip = hand_landmarks.landmark[tip_id]
+            mcp = hand_landmarks.landmark[mcp_id]
+            
+            dist_tip_to_wrist = self._get_distance(tip, wrist)
+            dist_mcp_to_wrist = self._get_distance(mcp, wrist)
+            
+            # Si le bout du doigt est plus proche du poignet que sa propre base, il est plié
+            if dist_tip_to_wrist < dist_mcp_to_wrist:
+                fingers_folded += 1
+                
+        # On considère la main fermée si au moins 3 doigts sont pliés
         return fingers_folded >= 3
+    
+    # def is_hand_closed(self, hand_landmarks):
+    #     tips_ids = [8, 12, 16, 20] 
+    #     pips_ids = [6, 10, 14, 18]
+    #     fingers_folded = sum(1 for t, p in zip(tips_ids, pips_ids) if hand_landmarks.landmark[t].y > hand_landmarks.landmark[p].y)
+    #     return fingers_folded >= 3
 
     def is_hand_out_of_bounds(self, hand_landmarks):
         wrist = hand_landmarks.landmark[0]
